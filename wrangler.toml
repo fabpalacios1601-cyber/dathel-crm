@@ -5,4 +5,4 @@ compatibility_date = "2026-08-28"
 [[d1_databases]]
 binding = "DB"
 database_name = "dathel-crm-db"
-database_id = "REEMPLAZAR_CON_ID_DE_D1"
+database_id = "615fec20-5a19-4d98-a589-bfda2f7f9718"
