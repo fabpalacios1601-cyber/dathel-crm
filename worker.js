@@ -18,7 +18,7 @@ async function createUser(e){e.preventDefault();try{await api('/api/users',{meth
 async function settings(){let d=await api('/api/settings');shell('<h1>Administración</h1><div class="panel"><h2>Objetivo mensual</h2><form onsubmit="saveSettings(event)"><input type="number" name="target" value="'+d.target+'"><button>GUARDAR</button></form></div>')}
 async function saveSettings(e){e.preventDefault();await api('/api/settings',{method:'PUT',body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});settings()}
 async function logout(){await api('/api/logout',{method:'POST'});state.me=null;login()}
-api('/api/me').then(x=>{state.me=x;dashboard()}).catch(login)
+login()
 </script></body></html>`;
 
 async function sha(text){
