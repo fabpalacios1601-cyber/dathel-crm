@@ -8,52 +8,153 @@ async function api(url,opt={}){let r=await fetch(url,{headers:{'Content-Type':'a
 function login(){A.innerHTML='<div class="login"><div class="loginbox"><div class="logo">DATHEL <span>CRM</span></div><p class="muted">Gestión de ventas de luz y gas</p><form onsubmit="doLogin(event)"><label>Usuario<input id="u" required></label><label>Contraseña<input id="p" type="password" required></label><button>INICIAR SESIÓN</button></form></div></div>'}
 async function doLogin(e){e.preventDefault();try{state.me=await api('/api/login',{method:'POST',body:JSON.stringify({username:u.value,password:p.value})});dashboard()}catch(x){alert(x.message)}}
 function shell(body){
-A.innerHTML=`
-<div class="crm-layout">
+  A.innerHTML = `
+  <div class="crm-layout">
 
-  <aside class="sidebar">
+    <aside class="sidebar">
 
-    <div class="sidebar-brand">
-      <div class="logo-circle">D</div>
-      <div class="brand-name">DATHEL</div>
-      <div class="brand-connect">CONNECT</div>
-      <div class="brand-line"></div>
-      <div class="brand-slogan">
-        CONECTAMOS PERSONAS,<br>
-        IMPULSAMOS SOLUCIONES
+      <div class="sidebar-brand">
+
+        <div class="logo-placeholder">
+          DATHEL
+        </div>
+
+        <div class="brand-connect">
+          CONNECT
+        </div>
+
+        <div class="brand-slogan">
+          CONECTAMOS PERSONAS,<br>
+          IMPULSAMOS SOLUCIONES
+        </div>
+
       </div>
+
+      <nav class="sidebar-nav">
+
+        <a href="#" class="sidebar-link active"
+           onclick="dashboard();return false;">
+          <span class="nav-icon">⌂</span>
+          <span>Dashboard</span>
+        </a>
+
+        ${
+          state.me.role === 'COMERCIAL'
+          ? `
+          <a href="#" class="sidebar-link"
+             onclick="newSale();return false;">
+            <span class="nav-icon">＋</span>
+            <span>Nueva venta</span>
+          </a>
+          `
+          : ''
+        }
+
+        <a href="#" class="sidebar-link"
+           onclick="dashboard();return false;">
+          <span class="nav-icon">▤</span>
+          <span>Ventas</span>
+        </a>
+
+        ${
+          ['ADMIN','DIRECTOR','JEFE','SUPERVISOR'].includes(state.me.role)
+          ? `
+          <a href="#" class="sidebar-link"
+             onclick="users();return false;">
+            <span class="nav-icon">♙</span>
+            <span>Usuarios</span>
+          </a>
+          `
+          : ''
+        }
+
+        ${
+          state.me.role === 'ADMIN'
+          ? `
+          <a href="#" class="sidebar-link"
+             onclick="settings();return false;">
+            <span class="nav-icon">⚙</span>
+            <span>Administración</span>
+          </a>
+          `
+          : ''
+        }
+
+      </nav>
+
+      <div class="sidebar-bottom">
+
+        <div class="support-box">
+          <div class="support-icon">◉</div>
+
+          <div>
+            <strong>Soporte</strong>
+            <small>¿Necesitas ayuda?</small>
+            <span>Contáctanos →</span>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          © 2026 DATHEL CONNECT<br>
+          Todos los derechos reservados.
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <div class="main-area">
+
+      <header class="main-topbar">
+
+        <button
+          class="menu-button"
+          type="button"
+          onclick="document.querySelector('.sidebar').classList.toggle('open')">
+          ☰
+        </button>
+
+        <div class="topbar-right">
+
+          <div class="notification">
+            🔔
+          </div>
+
+          <div class="user-profile">
+
+            <div class="avatar">
+              ${state.me.full_name.slice(0,2).toUpperCase()}
+            </div>
+
+            <div class="user-info">
+              <strong>${state.me.full_name}</strong>
+              <small>${state.me.role}</small>
+            </div>
+
+          </div>
+
+          <a href="#" class="logout-link"
+             onclick="logout();return false;">
+            Salir
+          </a>
+
+        </div>
+
+      </header>
+
+
+      <main class="main-content">
+
+        ${body}
+
+      </main>
+
     </div>
 
-    <nav class="sidebar-nav">
-
-      <button class="side-link active" onclick="dashboard()">
-        <span>⌂</span>
-        <b>Dashboard</b>
-      </button>
-
-      ${state.me.role==='COMERCIAL'?`
-      <button class="side-link" onclick="newSale()">
-        <span>＋</span>
-        <b>Nueva venta</b>
-      </button>`:''}
-
-      <button class="side-link" onclick="dashboard()">
-        <span>▤</span>
-        <b>Ventas</b>
-      </button>
-
-      ${['ADMIN','DIRECTOR','JEFE','SUPERVISOR'].includes(state.me.role)?`
-      <button class="side-link" onclick="users()">
-        <span>♙</span>
-        <b>Usuarios</b>
-      </button>`:''}
-
-      ${state.me.role==='ADMIN'?`
-      <button class="side-link" onclick="settings()">
-        <span>⚙</span>
-        <b>Administración</b>
-      </button>`:''}
-
+  </div>
+  `;
+}
     </nav>
 
     <div class="sidebar-bottom">
