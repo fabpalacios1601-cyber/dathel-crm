@@ -1,0 +1,8 @@
+name = "dathel-crm"
+main = "worker.js"
+compatibility_date = "2026-08-28"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dathel-crm-db"
+database_id = "REEMPLAZAR_CON_ID_DE_D1"

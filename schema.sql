@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS users(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ username TEXT UNIQUE NOT NULL,
+ full_name TEXT NOT NULL,
+ password_hash TEXT NOT NULL,
+ role TEXT NOT NULL,
+ active INTEGER NOT NULL DEFAULT 1,
+ created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sales(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ full_name TEXT NOT NULL,dni TEXT NOT NULL,mobile TEXT,fixed_phone TEXT,email TEXT,iban TEXT,
+ address TEXT,postal_code TEXT,population TEXT,province TEXT,cups_light TEXT,cups_gas TEXT,
+ company TEXT NOT NULL,product TEXT NOT NULL,status TEXT NOT NULL,commercial_id INTEGER NOT NULL,
+ created_at TEXT NOT NULL,updated_at TEXT NOT NULL,
+ FOREIGN KEY(commercial_id) REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS history(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,sale_id INTEGER NOT NULL,user_id INTEGER NOT NULL,
+ action TEXT NOT NULL,details TEXT,created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS comments(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,sale_id INTEGER NOT NULL,user_id INTEGER NOT NULL,
+ comment TEXT NOT NULL,created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sessions(
+ token TEXT PRIMARY KEY,user_id INTEGER NOT NULL,expires_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+INSERT OR IGNORE INTO settings(key,value) VALUES('monthly_target','0');
