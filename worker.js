@@ -7,7 +7,115 @@ let state={me:null, sales:[], users:[], dash:null};
 async function api(url,opt={}){let r=await fetch(url,{headers:{'Content-Type':'application/json',...(opt.headers||{})},...opt});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Error');return d}
 function login(){A.innerHTML='<div class="login"><div class="loginbox"><div class="logo">DATHEL <span>CRM</span></div><p class="muted">Gestión de ventas de luz y gas</p><form onsubmit="doLogin(event)"><label>Usuario<input id="u" required></label><label>Contraseña<input id="p" type="password" required></label><button>INICIAR SESIÓN</button></form></div></div>'}
 async function doLogin(e){e.preventDefault();try{state.me=await api('/api/login',{method:'POST',body:JSON.stringify({username:u.value,password:p.value})});dashboard()}catch(x){alert(x.message)}}
-function shell(body){A.innerHTML='<header><div class="logo">DATHEL <span>CRM</span></div><nav><span>'+state.me.full_name+' · '+state.me.role+'</span> <button onclick="dashboard()">Dashboard</button> '+(state.me.role==='COMERCIAL'?'<button onclick="newSale()">+ Nueva venta</button>':'')+(['ADMIN','DIRECTOR','JEFE','SUPERVISOR'].includes(state.me.role)?'<button onclick="users()">Usuarios</button>':'')+(state.me.role==='ADMIN'?'<button onclick="settings()">Administración</button>':'')+'<button onclick="logout()">Salir</button></nav></header><main>'+body+'</main>'}
+function shell(body){
+A.innerHTML=`
+<div class="crm-layout">
+
+  <aside class="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="logo-circle">D</div>
+      <div class="brand-name">DATHEL</div>
+      <div class="brand-connect">CONNECT</div>
+      <div class="brand-line"></div>
+      <div class="brand-slogan">
+        CONECTAMOS PERSONAS,<br>
+        IMPULSAMOS SOLUCIONES
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <button class="side-link active" onclick="dashboard()">
+        <span>⌂</span>
+        <b>Dashboard</b>
+      </button>
+
+      ${state.me.role==='COMERCIAL'?`
+      <button class="side-link" onclick="newSale()">
+        <span>＋</span>
+        <b>Nueva venta</b>
+      </button>`:''}
+
+      <button class="side-link" onclick="dashboard()">
+        <span>▤</span>
+        <b>Ventas</b>
+      </button>
+
+      ${['ADMIN','DIRECTOR','JEFE','SUPERVISOR'].includes(state.me.role)?`
+      <button class="side-link" onclick="users()">
+        <span>♙</span>
+        <b>Usuarios</b>
+      </button>`:''}
+
+      ${state.me.role==='ADMIN'?`
+      <button class="side-link" onclick="settings()">
+        <span>⚙</span>
+        <b>Administración</b>
+      </button>`:''}
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <div class="support-box">
+        <div class="support-title">◉ Soporte</div>
+        <div class="support-text">¿Necesitas ayuda?</div>
+        <div class="support-link">Contáctanos →</div>
+      </div>
+
+      <div class="sidebar-footer">
+        © 2026 DATHEL CONNECT<br>
+        Todos los derechos reservados.
+      </div>
+
+    </div>
+
+  </aside>
+
+  <div class="main-area">
+
+    <header class="main-topbar">
+
+      <div class="top-title">
+        <span>DATHEL</span> CRM
+      </div>
+
+      <div class="topbar-right">
+
+        <div class="notification">🔔</div>
+
+        <div class="user-profile">
+
+          <div class="avatar">
+            ${state.me.full_name.substring(0,2).toUpperCase()}
+          </div>
+
+          <div class="user-info">
+            <strong>${state.me.full_name}</strong>
+            <small>${state.me.role}</small>
+          </div>
+
+        </div>
+
+        <button class="logout-button" onclick="logout()">
+          Salir
+        </button>
+
+      </div>
+
+    </header>
+
+    <main class="main-content">
+
+      ${body}
+
+    </main>
+
+  </div>
+
+</div>`;
+}'<header><div class="logo">DATHEL <span>CRM</span></div><nav><span>'+state.me.full_name+' · '+state.me.role+'</span> <button onclick="dashboard()">Dashboard</button> '+(state.me.role==='COMERCIAL'?'<button onclick="newSale()">+ Nueva venta</button>':'')+(['ADMIN','DIRECTOR','JEFE','SUPERVISOR'].includes(state.me.role)?'<button onclick="users()">Usuarios</button>':'')+(state.me.role==='ADMIN'?'<button onclick="settings()">Administración</button>':'')+'<button onclick="logout()">Salir</button></nav></header><main>'+body+'</main>'}
 async function dashboard(){let d=await api('/api/dashboard');state.dash=d;let cards=[['VENTAS',d.total],['ACTIVAS',d.active],['PENDIENTES',d.pending],['KO',d.ko],['BAJA/CANCEL.',d.cancelled]];shell('<div class="actions"><div><h1>Dashboard</h1><p class="muted">Resumen general de ventas</p></div><a class="btn" href="/api/export">Exportar CSV</a></div><div class="cards">'+cards.map(x=>'<div class="card"><b>'+x[0]+'</b><strong>'+x[1]+'</strong></div>').join('')+'</div><div class="grid"><section class="panel"><h2>Compañías</h2>'+(d.companies||[]).map(x=>'<p><b>'+x.name+'</b> <span class="muted"> '+x.total+' ventas · '+x.active+' activas</span></p><div class="bar"><i style="width:'+(d.total?x.total/d.total*100:0)+'%"></i></div>').join('')+'</section><section class="panel"><h2>Ranking</h2>'+(d.ranking||[]).map((x,i)=>'<p><b>#'+(i+1)+' '+x.name+'</b><br>'+x.total+' ventas · '+x.active+' activas</p>').join('')+'</section></div><section class="panel"><h2>Últimas ventas</h2><table><tr><th>ID</th><th>Cliente</th><th>Comercial</th><th>Compañía</th><th>Producto</th><th>Estado</th></tr>'+(d.sales||[]).slice(0,30).map(s=>'<tr><td><a href="#" onclick="sale('+s.id+');return false">#'+s.id+'</a></td><td>'+s.full_name+'</td><td>'+s.commercial_name+'</td><td>'+s.company+'</td><td>'+s.product+'</td><td>'+s.status+'</td></tr>').join('')+'</table></section>')}
 function newSale(){let f=['full_name','dni','mobile','fixed_phone','email','iban','address','postal_code','population','province','cups_light','cups_gas'];shell('<h1>Nueva venta</h1><form class="panel form" onsubmit="saveSale(event)">'+f.map(k=>'<label>'+k.replaceAll('_',' ').toUpperCase()+'<input name="'+k+'" '+(k==='full_name'||k==='dni'?'required':'')+'></label>').join('')+'<label>COMPAÑÍA<select name="company">'+['ENDESA','REPSOL','NATURGY','NORDY'].map(x=>'<option>'+x+'</option>').join('')+'</select></label><label>PRODUCTO<select name="product"><option>LUZ</option><option>GAS</option><option>LUZ + GAS</option></select></label><div class="wide"><button>GUARDAR VENTA</button></div></form>')}
 async function saveSale(e){e.preventDefault();let o=Object.fromEntries(new FormData(e.target));try{let x=await api('/api/sales',{method:'POST',body:JSON.stringify(o)});sale(x.id)}catch(x){alert(x.message)}}
