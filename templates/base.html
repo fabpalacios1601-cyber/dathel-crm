@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DATHEL CRM</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% if current_user %}
+<header class="topbar">
+  <div class="brand">DATHEL <span>CRM</span></div>
+  <nav>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    {% if current_user.role == "COMERCIAL" %}<a href="{{ url_for('new_sale') }}">+ Nueva venta</a>{% endif %}
+    {% if current_user.role in ["DIRECTOR_GENERAL","JEFE_OPERACIONES"] %}<a href="{{ url_for('users') }}">Usuarios</a>{% endif %}
+    <a href="{{ url_for('logout') }}">Salir</a>
+  </nav>
+</header>
+{% endif %}
+<main class="container">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+{% endwith %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

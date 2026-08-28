@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="heading"><div><h1>Venta #{{ sale.id }}</h1><p class="muted">{{ sale.full_name }} · registrada por {{ sale.commercial_name }}</p></div>
+<span class="status large {{ sale.status|replace(' ','-') }}">{{ sale.status }}</span></div>
+<div class="two">
+<div class="panel"><h2>Datos de la venta</h2><div class="details">
+{% for label,key in [('Nombres completos','full_name'),('DNI','dni'),('Móvil','mobile'),('Fijo','fixed_phone'),('Correo','email'),('IBAN','iban'),('Dirección','address'),('Código postal','postal_code'),('Población','population'),('Provincia','province'),('CUPS de luz','cups_light'),('CUPS de gas','cups_gas'),('Compañía','company'),('Producto','product'),('Creada','created_at'),('Actualizada','updated_at')] %}
+<div><small>{{ label }}</small><b>{{ sale[key] or '—' }}</b></div>
+{% endfor %}</div></div>
+<div class="panel"><h2>Historial / comentarios</h2>
+<div class="comments">{% for c in comments %}<div class="comment"><b>{{ c.full_name }}</b> <small>{{ c.created_at }}</small><p>{{ c.comment }}</p></div>{% else %}<p class="muted">Sin comentarios.</p>{% endfor %}</div>
+{% if current_user.role in ["BO","JEFE_OPERACIONES","DIRECTOR_GENERAL"] %}
+<hr><h2>Actualizar venta</h2><form method="post"><label>Estado<select name="status">{% for st in statuses %}<option {% if sale.status==st %}selected{% endif %}>{{ st }}</option>{% endfor %}</select></label>
+<label>Comentario<textarea name="comment" placeholder="Comentario sobre la venta..."></textarea></label><button>GUARDAR CAMBIOS</button></form>{% endif %}
+</div></div>
+{% endblock %}

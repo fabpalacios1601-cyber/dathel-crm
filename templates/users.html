@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Usuarios</h1><div class="panel"><table><thead><tr><th>Usuario</th><th>Nombre</th><th>Puesto</th><th>Activo</th></tr></thead>
+<tbody>{% for u in users %}<tr><td>{{ u.username }}</td><td>{{ u.full_name }}</td><td>{{ u.role }}</td><td>{{ 'Sí' if u.active else 'No' }}</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

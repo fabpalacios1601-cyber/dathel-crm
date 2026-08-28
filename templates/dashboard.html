@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="heading"><div><h1>Dashboard</h1><p class="muted">Bienvenido, {{ current_user.full_name }} · {{ current_user.role }}</p></div>
+<form class="search" action="{{ url_for('search') }}"><input name="q" placeholder="Buscar ID, DNI, cliente o móvil" value="{{ search|default('') }}"><button>Buscar</button></form></div>
+<div class="cards">
+<div><span>VENTAS</span><strong>{{ total }}</strong></div><div><span>ACTIVAS</span><strong>{{ active }}</strong></div>
+<div><span>PENDIENTES</span><strong>{{ pending }}</strong></div><div><span>KO</span><strong>{{ ko }}</strong></div><div><span>BAJA/CANCEL.</span><strong>{{ cancelled }}</strong></div>
+</div>
+<div class="panel"><h2>Ventas</h2>
+<table><thead><tr><th>ID</th><th>Cliente</th><th>Comercial</th><th>Compañía</th><th>Producto</th><th>Estado</th><th>Actualizada</th></tr></thead>
+<tbody>{% for s in sales %}<tr>
+<td><a href="{{ url_for('sale_detail', sale_id=s.id) }}">#{{ s.id }}</a></td><td>{{ s.full_name }}</td><td>{{ s.commercial_name }}</td>
+<td>{{ s.company }}</td><td>{{ s.product }}</td><td><span class="status {{ s.status|replace(' ','-') }}">{{ s.status }}</span></td><td>{{ s.updated_at }}</td>
+</tr>{% else %}<tr><td colspan="7" class="empty">No hay ventas todavía.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}
