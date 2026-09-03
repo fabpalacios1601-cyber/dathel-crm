@@ -1050,37 +1050,7 @@ function applySaleFilter(){
 
 }
 
-  let month=
-    document.getElementById('filterMonth')?.value||'';
-
-  let from=
-    document.getElementById('filterFrom')?.value||'';
-
-  let to=
-    document.getElementById('filterTo')?.value||'';
-
-  document.querySelectorAll('tr[data-sale-date]').forEach(row=>{
-
-    let date=row.dataset.saleDate||'';
-    let show=true;
-
-    if(month && date.slice(0,7)!==month){
-      show=false;
-    }
-
-    if(from && date<from){
-      show=false;
-    }
-
-    if(to && date>to){
-      show=false;
-    }
-
-    row.style.display=show?'':'none';
-
-  });
-
-}
+  
 
 function clearSaleFilter(){
 
