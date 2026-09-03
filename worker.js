@@ -1924,29 +1924,38 @@ export default {
       ).all();
 
       let csv=
-        "ID,Cliente,DNI,Móvil,Email," +
-        "Compañía,Producto,Estado," +
-        "Comercial,Creada\n";
+  "\uFEFFsep=;\r\n"+
+  "ID;Cliente;DNI;Móvil;Teléfono fijo;"+
+  "Email;IBAN;Dirección;Código postal;"+
+  "Población;Provincia;CUPS luz;CUPS gas;"+
+  "Compañía;Producto;Estado;Comercial;Creada\r\n";
 
-      for(const s of x.results){
-
-        csv += [
-          s.id,
-          s.full_name,
-          s.dni,
-          s.mobile,
-          s.email,
-          s.company,
-          s.product,
-          s.status,
-          s.commercial_name,
-          s.created_at
-        ]
-        .map(
-          v=>`"${String(v??"").replaceAll('"','""')}"`
-        )
-        .join(",")+"\n";
-      }
+for(const s of x.results){
+  csv += [
+    s.id,
+    s.full_name,
+    s.dni,
+    s.mobile,
+    s.fixed_phone,
+    s.email,
+    s.iban,
+    s.address,
+    s.postal_code,
+    s.population,
+    s.province,
+    s.cups_light,
+    s.cups_gas,
+    s.company,
+    s.product,
+    s.status,
+    s.commercial_name,
+    s.created_at
+  ]
+  .map(
+    v=>`"${String(v??"").replaceAll('"','""')}"`
+  )
+  .join(";")+"\r\n";
+}
 
       return new Response(
         csv,
