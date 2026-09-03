@@ -1331,6 +1331,7 @@ async function users(){
               '<th>Nombre</th>'+
               '<th>Rol</th>'+
               '<th>Estado</th>'+
+              '<th>Acciones</th>'+
             '</tr>'+
           '</thead>'+
 
@@ -1344,6 +1345,10 @@ async function users(){
                 '<td>'+
                   (x.active?'Activo':'Inactivo')+
                 '</td>'+
+                '<td>'+
+'<button onclick="editUser('+x.id+')">EDITAR</button>'+
+'<button onclick="changeUserPassword('+x.id+')">CONTRASEÑA</button>'+
+'</td>'+
               '</tr>'
             ).join('')+
 
@@ -1384,7 +1389,68 @@ async function createUser(e){
 
   }
 }
+async function editUser(id){
 
+  const full_name=prompt("Nuevo nombre:");
+  if(full_name===null) return;
+
+  const username=prompt("Nuevo usuario:");
+  if(username===null) return;
+
+  const role=prompt(
+    "Nuevo rol (COMERCIAL, BO, SUPERVISOR, JEFE, DIRECTOR, ADMIN):"
+  );
+  if(role===null) return;
+
+  try{
+
+    await api(
+      '/api/users/'+id,
+      {
+        method:'PUT',
+        body:JSON.stringify({
+          full_name,
+          username,
+          role
+        })
+      }
+    );
+
+    users();
+
+  }catch(x){
+
+    alert(x.message);
+
+  }
+}
+
+
+async function changeUserPassword(id){
+
+  const password=prompt("Nueva contraseña:");
+  if(password===null || !password) return;
+
+  try{
+
+    await api(
+      '/api/users/'+id+'/password',
+      {
+        method:'PUT',
+        body:JSON.stringify({
+          password
+        })
+      }
+    );
+
+    alert("Contraseña cambiada correctamente");
+
+  }catch(x){
+
+    alert(x.message);
+
+  }
+}
 async function settings(){
 
   let d=await api('/api/settings');
