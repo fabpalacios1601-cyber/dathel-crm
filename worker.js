@@ -911,6 +911,25 @@ async function dashboard(){
 
 '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">'+
 
+  '<label>COMERCIAL'+
+    '<select id="filterCommercial">'+
+      '<option value="">TODOS LOS COMERCIALES</option>'+
+      [...new Map(
+        (d.sales||[]).map(s=>[
+          s.commercial_id,
+          s.commercial_name
+        ])
+      ).entries()]
+      .map(([id,name])=>
+        '<option value="'+id+'">'+name+'</option>'
+      ).join('')+
+    '</select>'+
+  '</label>'+
+
+  '<label>DNI DEL CLIENTE'+
+    '<input id="filterDni" type="text" placeholder="Escribir DNI">'+
+  '</label>'+
+
   '<label>MES'+
     '<input id="filterMonth" type="month">'+
   '</label>'+
@@ -923,15 +942,11 @@ async function dashboard(){
     '<input id="filterTo" type="date">'+
   '</label>'+
 
-  '<button type="button" onclick="applySaleFilter()">'+
-    'FILTRAR'+
-  '</button>'+
+  '<button type="button" onclick="applySaleFilter()">FILTRAR</button>'+
 
-  '<button type="button" onclick="clearSaleFilter()">'+
-    'LIMPIAR'+
-  '</button>'+
+  '<button type="button" onclick="clearSaleFilter()">LIMPIAR</button>'+
 
-'</div>'+
+
 
 '<h2>Ventas del período</h2>'+
 
@@ -950,7 +965,7 @@ async function dashboard(){
           '<tbody>'+
 
             (d.filteredSales||d.sales||[]).slice(0,30).map(s=>
-              '<tr data-sale-date="'+String(s.created_at||"").slice(0,10)+'">'+
+              '<tr data-sale-date="'+String(s.created_at||"").slice(0,10)+'" data-commercial-id="'+s.commercial_id+'" data-dni="'+(s.dni||'')+'">'+
                 '<td>'+
                   '<a href="#" onclick="sale('+s.id+');return false">'+
                     '#'+s.id+
@@ -983,6 +998,57 @@ String(s.status||'')
   );
 }
 function applySaleFilter(){
+
+  let commercial =
+    document.getElementById('filterCommercial')?.value||'';
+
+  let dni =
+    (document.getElementById('filterDni')?.value||'')
+    .trim()
+    .toLowerCase();
+
+  let month =
+    document.getElementById('filterMonth')?.value||'';
+
+  let from =
+    document.getElementById('filterFrom')?.value||'';
+
+  let to =
+    document.getElementById('filterTo')?.value||'';
+
+  document.querySelectorAll('tr[data-sale-date]').forEach(row=>{
+
+    let date=row.dataset.saleDate||'';
+    let rowCommercial=row.dataset.commercialId||'';
+    let rowDni=(row.dataset.dni||'').toLowerCase();
+
+    let show=true;
+
+    if(commercial && rowCommercial!==commercial){
+      show=false;
+    }
+
+    if(dni && !rowDni.includes(dni)){
+      show=false;
+    }
+
+    if(month && date.slice(0,7)!==month){
+      show=false;
+    }
+
+    if(from && date<from){
+      show=false;
+    }
+
+    if(to && date>to){
+      show=false;
+    }
+
+    row.style.display=show?'':'none';
+
+  });
+
+}
 
   let month=
     document.getElementById('filterMonth')?.value||'';
@@ -1018,6 +1084,12 @@ function applySaleFilter(){
 
 function clearSaleFilter(){
 
+  let commercial=
+    document.getElementById('filterCommercial');
+
+  let dni=
+    document.getElementById('filterDni');
+
   let month=
     document.getElementById('filterMonth');
 
@@ -1027,6 +1099,8 @@ function clearSaleFilter(){
   let to=
     document.getElementById('filterTo');
 
+  if(commercial)commercial.value='';
+  if(dni)dni.value='';
   if(month)month.value='';
   if(from)from.value='';
   if(to)to.value='';
