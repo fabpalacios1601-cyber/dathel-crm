@@ -1063,13 +1063,26 @@ function newSale(){
       '<form class="panel form" onsubmit="saveSale(event)">'+
 
         f.map(k=>
-          '<label>'+
-            k.replaceAll('_',' ').toUpperCase()+
-            '<input name="'+k+'" '+
-            (k==='full_name'||k==='dni'?'required':'')+
-            '>'+
-          '</label>'
-        ).join('')+
+  '<label>'+
+    ({
+      full_name:'NOMBRE COMPLETO',
+      dni:'DNI',
+      mobile:'MOVIL',
+      fixed_phone:'FIJO',
+      email:'CORREO ELECTRONICO',
+      iban:'IBAN',
+      address:'DIRECCION',
+      postal_code:'CODIGO POSTAL',
+      population:'POBLACION',
+      province:'PROVINCIA',
+      cups_light:'CUPS DE LUZ',
+      cups_gas:'CUPS DE GAS'
+    }[k])+
+    '<input name="'+k+'" '+
+    (k==='full_name'||k==='dni'?'required':'')+
+    '>'+
+  '</label>'
+).join('')+
 
         '<label>COMPAÑÍA'+
           '<select name="company">'+
