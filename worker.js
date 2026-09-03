@@ -2048,7 +2048,82 @@ export default {
         }
       }
     }
+const um=path.match(/^\/api\/users\/(\d+)$/);
 
+if(um && req.method==="PUT"){
+
+  if(
+    ![
+      "ADMIN",
+      "DIRECTOR",
+      "JEFE",
+      "SUPERVISOR"
+    ].includes(me.role)
+  ){
+    return fail("Sin permiso",403);
+  }
+
+  const id=Number(um[1]);
+  const b=await req.json();
+
+  if(!b.full_name || !b.username || !b.role){
+    return fail("Completa todos los campos");
+  }
+
+  try{
+
+    await env.DB.prepare(
+      "UPDATE users SET full_name=?,username=?,role=? WHERE id=?"
+    )
+    .bind(
+      b.full_name,
+      b.username,
+      b.role,
+      id
+    )
+    .run();
+
+    return ok({ok:true});
+
+  }catch(e){
+
+    return fail("El usuario ya existe");
+  }
+}
+
+const up=path.match(/^\/api\/users\/(\d+)\/password$/);
+
+if(up && req.method==="PUT"){
+
+  if(
+    ![
+      "ADMIN",
+      "DIRECTOR",
+      "JEFE",
+      "SUPERVISOR"
+    ].includes(me.role)
+  ){
+    return fail("Sin permiso",403);
+  }
+
+  const id=Number(up[1]);
+  const b=await req.json();
+
+  if(!b.password){
+    return fail("Escribe una contraseña");
+  }
+
+  await env.DB.prepare(
+    "UPDATE users SET password_hash=? WHERE id=?"
+  )
+  .bind(
+    await sha(b.password),
+    id
+  )
+  .run();
+
+  return ok({ok:true});
+}
     if(path==="/api/settings"){
 
       if(me.role!=="ADMIN"){
