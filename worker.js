@@ -394,6 +394,30 @@ a{
   font-weight:700;
 }
 
+.status-nuevo{
+  background:#eef2f7;
+}
+
+.status-pte-validacion{
+  background:#d1d5db;
+}
+
+.status-en-activacion{
+  background:#e8d3c0;
+}
+
+.status-activo{
+  background:#b7e4c7;
+}
+
+.status-ko{
+  background:#ffe08a;
+}
+
+.status-baja,
+.status-cancelado{
+  background:#f4a6a6;
+}
 .bar{
   height:8px;
   background:#e9edf2;
@@ -936,7 +960,13 @@ async function dashboard(){
                 '<td>'+s.commercial_name+'</td>'+
                 '<td>'+s.company+'</td>'+
                 '<td>'+s.product+'</td>'+
-                '<td>'+s.status+'</td>'+
+                '<td><span class="status status-'+
+String(s.status||'')
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,'')
+  .replaceAll(' ','-')+
+'">'+s.status+'</span></td>'+
               '</tr>'
             ).join('')+
 
