@@ -883,7 +883,33 @@ async function dashboard(){
 
       '<section class="panel">'+
 
-        '<h2>Últimas ventas</h2>'+
+        '<h2>Filtrar ventas</h2>'+
+
+'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">'+
+
+  '<label>MES'+
+    '<input id="filterMonth" type="month">'+
+  '</label>'+
+
+  '<label>DESDE'+
+    '<input id="filterFrom" type="date">'+
+  '</label>'+
+
+  '<label>HASTA'+
+    '<input id="filterTo" type="date">'+
+  '</label>'+
+
+  '<button type="button" onclick="applySaleFilter()">'+
+    'FILTRAR'+
+  '</button>'+
+
+  '<button type="button" onclick="clearSaleFilter()">'+
+    'LIMPIAR'+
+  '</button>'+
+
+'</div>'+
+
+'<h2>Ventas del período</h2>'+
 
         '<table>'+
           '<thead>'+
@@ -899,8 +925,8 @@ async function dashboard(){
 
           '<tbody>'+
 
-            (d.sales||[]).slice(0,30).map(s=>
-              '<tr>'+
+            (d.filteredSales||d.sales||[]).slice(0,30).map(s=>
+              '<tr data-sale-date="'+String(s.created_at||"").slice(0,10)+'">'+
                 '<td>'+
                   '<a href="#" onclick="sale('+s.id+');return false">'+
                     '#'+s.id+
@@ -925,6 +951,60 @@ async function dashboard(){
     'dashboard'
 
   );
+}
+function applySaleFilter(){
+
+  let month=
+    document.getElementById('filterMonth')?.value||'';
+
+  let from=
+    document.getElementById('filterFrom')?.value||'';
+
+  let to=
+    document.getElementById('filterTo')?.value||'';
+
+  document.querySelectorAll('tr[data-sale-date]').forEach(row=>{
+
+    let date=row.dataset.saleDate||'';
+    let show=true;
+
+    if(month && date.slice(0,7)!==month){
+      show=false;
+    }
+
+    if(from && date<from){
+      show=false;
+    }
+
+    if(to && date>to){
+      show=false;
+    }
+
+    row.style.display=show?'':'none';
+
+  });
+
+}
+
+function clearSaleFilter(){
+
+  let month=
+    document.getElementById('filterMonth');
+
+  let from=
+    document.getElementById('filterFrom');
+
+  let to=
+    document.getElementById('filterTo');
+
+  if(month)month.value='';
+  if(from)from.value='';
+  if(to)to.value='';
+
+  document.querySelectorAll('tr[data-sale-date]').forEach(row=>{
+    row.style.display='';
+  });
+
 }
 
 function newSale(){
